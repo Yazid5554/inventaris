@@ -44,7 +44,7 @@ class LokasiController extends Controller
         'keterangan' => 'nullable|string',
     ]);
 
-    Lokasi::create($validated);
+    Lokasi::create($validated); 
 
     return redirect()->route('lokasi.index')
                      ->with('success', 'Lokasi berhasil ditambahkan.');
