@@ -15,6 +15,14 @@
         animation: slideInLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
+    html.no-boot-animation .animate-card,
+    html.no-boot-animation .animate-sidebar {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        animation-delay: 0s !important;
+    }
+
     @keyframes circleGrow {
         0% {
             r: 0;

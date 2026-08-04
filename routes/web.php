@@ -18,6 +18,7 @@ Route::get('/', fn() => redirect()->route('login'));
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
 
 // Auth — semua role
 Route::middleware(['auth'])->group(function () {
@@ -29,7 +30,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Barang — super_admin & admin bisa akses
     Route::middleware(['role:super_admin,admin'])->group(function () {
-        Route::resource('barang', BarangController::class);
+        Route::resource('barang', BarangController::class)->except(['show']);
+        Route::post('/barang/{barang}/upload-foto', [BarangController::class, 'uploadFoto'])->name('barang.upload-foto');
         Route::get('/barang/{barang}/qr', [BarangController::class, 'generateQr'])->name('barang.qr');
         Route::resource('ruangan', LokasiController::class)->parameters(['ruangan' => 'lokasi'])->except(['show'])->names([
             'index'   => 'lokasi.index',
@@ -60,10 +62,12 @@ Route::post('/barang/{barang}/perbaikan', [PerbaikanController::class, 'store'])
 Route::patch('/perbaikan/{perbaikan}', [PerbaikanController::class, 'update'])->name('perbaikan.update');
 Route::delete('/perbaikan/{perbaikan}', [PerbaikanController::class, 'destroy'])->name('perbaikan.destroy');
 
-// Export
+// Export & Import
 Route::middleware(['auth', 'role:super_admin,admin'])->group(function () {
     Route::get('/export/excel', [ExportController::class, 'exportExcel'])->name('export.excel');
     Route::get('/export/pdf',   [ExportController::class, 'exportPdf'])->name('export.pdf');
+    Route::post('/import/excel', [ExportController::class, 'importExcel'])->name('import.excel');
+    Route::get('/import/template', [ExportController::class, 'downloadTemplate'])->name('import.template');
 });
 
 Route::get('/scan', function () {

@@ -115,15 +115,26 @@
                     {{-- Foto --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto Barang</label>
-                        <div class="relative group cursor-pointer h-56">
-                            <input type="file" name="foto" accept="image/*"
+                        <div class="relative group cursor-pointer min-h-[220px]">
+                            <input type="file" name="foto" id="foto-input" accept="image/*" onchange="previewImage(this)"
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            <div class="h-full flex flex-col justify-center border-2 border-dashed border-gray-300 rounded-xl px-4 text-center group-hover:border-[#2548cc] transition-colors bg-gray-50 group-hover:bg-blue-50/50 @error('foto') border-red-400 bg-red-50 @enderror">
+                            
+                            {{-- Placeholder Dropzone --}}
+                            <div id="dropzone-placeholder" class="h-56 flex flex-col justify-center border-2 border-dashed border-gray-300 rounded-xl px-4 text-center group-hover:border-[#2548cc] transition-colors bg-gray-50 group-hover:bg-blue-50/50 @error('foto') border-red-400 bg-red-50 @enderror">
                                 <svg class="mx-auto h-12 w-12 text-gray-400 group-hover:text-[#2548cc] mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 <p class="text-sm font-medium text-gray-700">Klik atau drag gambar ke area ini</p>
                                 <p class="text-[11px] text-gray-500 mt-1">Format JPG, PNG, atau WEBP. Maksimal 2MB.</p>
+                            </div>
+
+                            {{-- Image Preview Container --}}
+                            <div id="preview-container" class="hidden relative h-56 border-2 border-solid border-[#2548cc]/30 rounded-xl p-2 bg-blue-50/30 flex items-center justify-center overflow-hidden">
+                                <img id="image-preview" src="#" alt="Preview" class="h-full w-full object-contain rounded-lg">
+                                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none flex items-center gap-1.5 shadow-lg">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    Klik untuk ganti gambar
+                                </div>
                             </div>
                         </div>
                         @error('foto')<p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>@enderror
@@ -146,4 +157,23 @@
     </div>
     </div>
 </div>
+<script>
+function previewImage(input) {
+    const placeholder = document.getElementById('dropzone-placeholder');
+    const container = document.getElementById('preview-container');
+    const preview = document.getElementById('image-preview');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            placeholder.classList.add('hidden');
+            container.classList.remove('hidden');
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 @endsection

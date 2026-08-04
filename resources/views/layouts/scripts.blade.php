@@ -92,6 +92,7 @@
         const avatar = document.getElementById('sidebar-avatar');
         const avatarSvg = avatar ? avatar.querySelector('svg') : null;
         const sidebarName = document.getElementById('sidebar-name');
+        const sidebarRole = document.getElementById('sidebar-role');
         const sidebarDivider = document.getElementById('sidebar-divider');
 
         if (!animate) {
@@ -101,14 +102,17 @@
         }
 
         if (isCollapsed) {
-            sidebar.classList.replace('w-60', 'w-16');
-            main.classList.replace('ml-60', 'ml-16');
+            sidebar.classList.replace('w-60', 'w-20');
+            sidebar.classList.replace('w-16', 'w-20');
+            main.classList.replace('ml-60', 'ml-20');
+            main.classList.replace('ml-16', 'ml-20');
 
-            // Sembunyikan teks nav, nama, divider, system info
+            // Sembunyikan teks nav, nama, role, divider, system info
             document.querySelectorAll('#sidebar nav a span, .system-info-box').forEach(el => {
                 el.classList.add('hidden');
             });
             if (sidebarName) sidebarName.classList.add('hidden');
+            if (sidebarRole) sidebarRole.classList.add('hidden');
             if (sidebarDivider) sidebarDivider.classList.add('hidden');
 
             // Pusatkan icon nav
@@ -119,23 +123,25 @@
 
             // Kecilkan avatar
             if (avatar) {
-                avatar.classList.remove('w-24', 'w-32');
-                avatar.classList.add('w-10');
-                avatar.classList.remove('h-24', 'h-32');
-                avatar.classList.add('h-10');
+                avatar.classList.remove('w-24', 'w-32', 'w-10');
+                avatar.classList.add('w-12');
+                avatar.classList.remove('h-24', 'h-32', 'h-10');
+                avatar.classList.add('h-12');
                 avatar.classList.replace('border-4', 'border-2');
             }
             if (avatarSvg) {
-                avatarSvg.classList.remove('w-14', 'w-16');
-                avatarSvg.classList.add('w-6');
-                avatarSvg.classList.remove('h-14', 'h-16');
-                avatarSvg.classList.add('h-6');
+                avatarSvg.classList.remove('w-14', 'w-16', 'w-6');
+                avatarSvg.classList.add('w-7');
+                avatarSvg.classList.remove('h-14', 'h-16', 'h-6');
+                avatarSvg.classList.add('h-7');
             }
 
             icon.classList.add('rotate-180');
 
         } else {
+            sidebar.classList.replace('w-20', 'w-60');
             sidebar.classList.replace('w-16', 'w-60');
+            main.classList.replace('ml-20', 'ml-60');
             main.classList.replace('ml-16', 'ml-60');
 
             // Tampilkan kembali
@@ -143,6 +149,7 @@
                 el.classList.remove('hidden');
             });
             if (sidebarName) sidebarName.classList.remove('hidden');
+            if (sidebarRole) sidebarRole.classList.remove('hidden');
             if (sidebarDivider) sidebarDivider.classList.remove('hidden');
 
             // Kembalikan padding nav
@@ -153,16 +160,16 @@
 
             // Besarkan avatar
             if (avatar) {
-                avatar.classList.remove('w-10');
+                avatar.classList.remove('w-10', 'w-12');
                 avatar.classList.add('w-32');
-                avatar.classList.remove('h-10');
+                avatar.classList.remove('h-10', 'h-12');
                 avatar.classList.add('h-32');
                 avatar.classList.replace('border-2', 'border-4');
             }
             if (avatarSvg) {
-                avatarSvg.classList.remove('w-6');
+                avatarSvg.classList.remove('w-6', 'w-7');
                 avatarSvg.classList.add('w-16');
-                avatarSvg.classList.remove('h-6');
+                avatarSvg.classList.remove('h-6', 'h-7');
                 avatarSvg.classList.add('h-16');
             }
 

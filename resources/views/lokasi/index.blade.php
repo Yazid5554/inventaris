@@ -11,7 +11,7 @@
 </style>
 
 {{-- Header --}}
-<div class="flex items-center justify-between mb-6 animate-card" style="animation-delay: 0ms;">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6 animate-card" style="animation-delay: 0ms;">
     <div class="flex items-center gap-3">
         <div class="text-[#1a2f6e]">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,7 +24,7 @@
         </div>
     </div>
     <a href="{{ route('lokasi.create') }}"
-       class="bg-[#2548cc] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:bg-blue-800 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 flex items-center gap-2">
+       class="bg-[#2548cc] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:bg-blue-800 transition-all flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -33,7 +33,7 @@
 </div>
 
 {{-- Stat Cards --}}
-<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
     {{-- Total Ruangan --}}
     <div class="group bg-white rounded-xl border border-gray-100 shadow-sm p-4 relative overflow-hidden flex flex-col justify-between h-[110px] hover:-translate-y-1 hover:shadow-xl hover:border-blue-100 transition-all duration-300 animate-card" style="animation-delay: 100ms;">
@@ -140,7 +140,7 @@
     $c = $colors[$i % 4];
 @endphp
 @if($i === 0)
-<div class="grid grid-cols-3 gap-5 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
 @endif
 
     <div class="group bg-white rounded-2xl border {{ $c['border'] }} shadow-sm p-5 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg {{ $c['hover_border'] }} transition-all duration-300 flex flex-col gap-3 animate-card" style="animation-delay: {{ 300 + ($i * 250) }}ms;">
@@ -195,7 +195,7 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                     Edit
                 </a>
-                <form method="POST" action="{{ route('lokasi.destroy', $lokasi) }}" class="inline-block" onsubmit="return confirm('Hapus ruangan {{ $lokasi->nama }}?')">
+                <form method="POST" action="{{ route('lokasi.destroy', $lokasi) }}" class="inline-block" onsubmit="return confirmDelete(event, 'Hapus ruangan {{ $lokasi->nama }}?')">
                     @csrf @method('DELETE')
                     <button type="submit"
                         class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-500 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors"

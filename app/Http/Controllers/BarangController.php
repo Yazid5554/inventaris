@@ -72,7 +72,7 @@ class BarangController extends Controller
     // ============================================================
     public function index(Request $request)
     {
-        $query = Barang::with('lokasi');
+        $query = Barang::with(['lokasi', 'riwayatKondisi' => fn($q) => $q->latest()]);
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -87,7 +87,21 @@ class BarangController extends Controller
         }
 
         if ($request->filled('kondisi')) {
-            if ($request->kondisi === 'rusak') {
+            $kondisiReq = $request->kondisi;
+
+            if ($kondisiReq === 'baik') {
+                $query->where(function ($q) {
+                    $q->whereDoesntHave('riwayatKondisi')
+                      ->orWhereExists(function ($sub) {
+                          $sub->selectRaw('1')
+                              ->from('riwayat_kondisi')
+                              ->whereRaw('riwayat_kondisi.id_barang = barang.id')
+                              ->where('riwayat_kondisi.kondisi', 'baik')
+                              ->whereRaw('riwayat_kondisi.id = (select max(id) from riwayat_kondisi where id_barang = barang.id)');
+                      });
+                });
+            } elseif ($kondisiReq === 'rusak') {
+                // Umbrella filter untuk semua barang rusak & afkir
                 $query->whereExists(function ($sub) {
                     $sub->selectRaw('1')
                         ->from('riwayat_kondisi')
@@ -95,7 +109,16 @@ class BarangController extends Controller
                         ->whereIn('riwayat_kondisi.kondisi', ['rusak_ringan', 'rusak_berat', 'tidak_layak_pakai'])
                         ->whereRaw('riwayat_kondisi.id = (select max(id) from riwayat_kondisi where id_barang = barang.id)');
                 });
-            } elseif ($request->kondisi === 'dalam_perbaikan') {
+            } elseif (in_array($kondisiReq, ['rusak_ringan', 'rusak_berat'])) {
+                // Spesifik Rusak Ringan atau Rusak Berat
+                $query->whereExists(function ($sub) use ($kondisiReq) {
+                    $sub->selectRaw('1')
+                        ->from('riwayat_kondisi')
+                        ->whereRaw('riwayat_kondisi.id_barang = barang.id')
+                        ->where('riwayat_kondisi.kondisi', $kondisiReq)
+                        ->whereRaw('riwayat_kondisi.id = (select max(id) from riwayat_kondisi where id_barang = barang.id)');
+                });
+            } elseif (in_array($kondisiReq, ['dalam_perbaikan', 'perbaikan_aktif'])) {
                 $query->whereExists(function ($sub) {
                     $sub->selectRaw('1')
                         ->from('riwayat_kondisi')
@@ -103,12 +126,13 @@ class BarangController extends Controller
                         ->where('riwayat_kondisi.kondisi', 'dalam_perbaikan')
                         ->whereRaw('riwayat_kondisi.id = (select max(id) from riwayat_kondisi where id_barang = barang.id)');
                 });
-            } elseif ($request->kondisi === 'perbaikan_aktif') {
+            } elseif ($kondisiReq === 'tidak_layak_pakai') {
                 $query->whereExists(function ($sub) {
                     $sub->selectRaw('1')
-                        ->from('perbaikan')
-                        ->whereRaw('perbaikan.id_barang = barang.id')
-                        ->whereIn('perbaikan.status', ['menunggu', 'sedang_diperbaiki']);
+                        ->from('riwayat_kondisi')
+                        ->whereRaw('riwayat_kondisi.id_barang = barang.id')
+                        ->where('riwayat_kondisi.kondisi', 'tidak_layak_pakai')
+                        ->whereRaw('riwayat_kondisi.id = (select max(id) from riwayat_kondisi where id_barang = barang.id)');
                 });
             }
         }
@@ -270,5 +294,30 @@ class BarangController extends Controller
     {
         $barangs = Barang::with('lokasi')->latest()->get();
         return view('barang.print-qr-semua', compact('barangs'));
+    }
+
+    // ============================================================
+    // UPLOAD FOTO (khusus dari detail barang jika belum ada foto)
+    // ============================================================
+    public function uploadFoto(Request $request, Barang $barang)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'foto.required' => 'File foto wajib dipilih.',
+            'foto.image'    => 'File harus berupa gambar.',
+            'foto.mimes'    => 'Format foto harus JPG, PNG, atau WEBP.',
+            'foto.max'      => 'Ukuran foto maksimal 2MB.',
+        ]);
+
+        if ($barang->foto) {
+            Storage::disk('public')->delete($barang->foto);
+        }
+
+        $path = $request->file('foto')->store('barang', 'public');
+        $barang->update(['foto' => $path]);
+
+        return redirect()->route('barang.show', $barang)
+            ->with('success', 'Foto barang berhasil diunggah.');
     }
 }

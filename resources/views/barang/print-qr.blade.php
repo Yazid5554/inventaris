@@ -1,177 +1,87 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print QR — {{ $barang->nama }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+@section('title', 'Print QR Code - ' . $barang->nama)
+
+@section('content')
+<style>
+    @media print {
+        #sidebar, #header, nav, footer, .no-print {
+            display: none !important;
         }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        body, #main-content, main {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            overflow: visible !important;
+            width: 100% !important;
         }
-
-        .card {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 24px;
-            width: 280px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        .qr-card {
+            box-shadow: none !important;
+            border: 2px solid #000 !important;
+            margin: 0 auto !important;
+            width: 300px !important;
         }
+    }
+    .svg-qr svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+    }
+</style>
 
-        .logo {
-            font-size: 13px;
-            font-weight: bold;
-            color: #4f46e5;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-        }
+<div class="max-w-xl mx-auto w-full pb-12">
 
-        .qr-img {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 16px;
-            display: block;
-        }
+    {{-- Header Action Bar --}}
+    <div class="flex items-center justify-between mb-6 no-print animate-card" style="animation-delay: 0ms;">
+        <a href="{{ route('barang.show', $barang) }}" class="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-[#2548cc] hover:border-[#2548cc] hover:bg-blue-50 transition-all shadow-sm flex items-center gap-2 text-xs font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            Kembali ke Detail
+        </a>
+        <button onclick="window.print()" class="bg-[#2548cc] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md hover:bg-blue-800 transition flex items-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+            Print QR
+        </button>
+    </div>
 
-        .nama {
-            font-size: 16px;
-            font-weight: bold;
-            color: #111827;
-            margin-bottom: 8px;
-        }
-
-        .info-table {
-            width: 100%;
-            font-size: 11px;
-            color: #374151;
-            margin-top: 10px;
-            border-collapse: collapse;
-        }
-
-        .info-table td {
-            padding: 3px 4px;
-            text-align: left;
-        }
-
-        .info-table td:first-child {
-            color: #6b7280;
-            width: 45%;
-        }
-
-        .no-inventaris {
-            margin-top: 12px;
-            font-size: 10px;
-            font-family: monospace;
-            color: #4f46e5;
-            background: #eef2ff;
-            padding: 6px 10px;
-            border-radius: 6px;
-            word-break: break-all;
-        }
-
-        .btn-area {
-            margin-top: 24px;
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-print {
-            background: #4f46e5;
-            color: white;
-        }
-
-        .btn-back {
-            background: #e5e7eb;
-            color: #374151;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        @media print {
-            body {
-                background: white;
-            }
-
-            .btn-area {
-                display: none;
-            }
-
-            .card {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <div>
-        <div class="card">
-            <div class="logo">📦 INVENTARIS</div>
-
-            <img src="{{ route('barang.qr', $barang) }}" class="qr-img" alt="QR Code">
-
-            <div class="nama">{{ $barang->nama }}</div>
-
-            <table class="info-table">
-                <tr>
-                    <td>Kode</td>
-                    <td><strong>{{ $barang->kode_barang ?? '-' }}</strong></td>
-                </tr>
-                <tr>
-                    <td>Ruangan</td>
-                    <td>{{ $barang->lokasi?->nama ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td>Gedung</td>
-                    <td>{{ strtoupper($barang->lokasi?->gedung ?? '-') }}</td>
-                </tr>
-                <tr>
-                    <td>Lantai</td>
-                    <td>{{ $barang->lokasi?->lantai ?? '-' }}</td>
-                </tr>
-                @if($barang->tanggal_pengadaan)
-                <tr>
-                    <td>Tgl Pengadaan</td>
-                    <td>{{ \Carbon\Carbon::parse($barang->tanggal_pengadaan)->format('d/m/Y') }}</td>
-                </tr>
-                @endif
-            </table>
-
-            <div class="no-inventaris">{{ $barang->nomor_inventaris ?? '-' }}</div>
+    {{-- Single QR Card --}}
+    <div class="qr-card bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-lg w-80 mx-auto">
+        <div class="border-b border-gray-100 pb-3 mb-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#2548cc]"></span>
+                <span class="text-xs font-black text-[#1a2f6e] tracking-widest uppercase">INVENTARIS</span>
+            </div>
+            <span class="text-xs font-semibold text-gray-400">{{ $barang->kode_barang ?? '-' }}</span>
         </div>
 
-        <div class="btn-area">
-            <a href="{{ route('barang.show', $barang) }}" class="btn btn-back">← Kembali</a>
-            <button onclick="window.print()" class="btn btn-print">🖨️ Print</button>
+        <div class="my-4 flex justify-center">
+            <div class="p-3 bg-white rounded-2xl border border-gray-100 shadow-inner inline-block w-48 h-48 svg-qr">
+                {!! QrCode::size(170)->errorCorrection('M')->generate(route('barang.show', $barang)) !!}
+            </div>
+        </div>
+
+        <h2 class="font-extrabold text-base text-gray-900 mb-3">{{ $barang->nama }}</h2>
+
+        <div class="bg-gray-50 rounded-xl p-3 text-xs space-y-1.5 text-gray-600 border border-gray-100 text-left">
+            <div class="flex justify-between">
+                <span class="text-gray-400">Ruangan:</span>
+                <strong class="text-gray-800">{{ $barang->lokasi?->nama ?? '-' }}</strong>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">Gedung / Lt:</span>
+                <strong class="text-gray-800">{{ strtoupper($barang->lokasi?->gedung ?? '-') }} (Lt. {{ $barang->lokasi?->lantai ?? '-' }})</strong>
+            </div>
+            @if($barang->tanggal_pengadaan)
+            <div class="flex justify-between">
+                <span class="text-gray-400">Pengadaan:</span>
+                <strong class="text-gray-800">{{ \Carbon\Carbon::parse($barang->tanggal_pengadaan)->format('d/m/Y') }}</strong>
+            </div>
+            @endif
+        </div>
+
+        <div class="mt-4 font-mono text-xs font-bold text-[#2548cc] bg-blue-50 border border-blue-100 py-2 px-3 rounded-xl">
+            {{ $barang->nomor_inventaris ?? '-' }}
         </div>
     </div>
 
-</body>
-
-</html>
+</div>
+@endsection

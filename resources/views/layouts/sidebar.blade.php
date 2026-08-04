@@ -1,9 +1,9 @@
-{{-- Sidebar --}}
-<aside id="sidebar" class="w-60 min-h-screen bg-[#1a2f6e] flex flex-col fixed top-0 left-0 z-30 transition-all duration-300 overflow-hidden">
+<aside id="sidebar" class="w-60 min-h-screen bg-[#1a2f6e] hidden md:flex flex-col fixed top-0 left-0 z-30 transition-all duration-300 overflow-hidden">
 
     {{-- Avatar & Nama --}}
     <div class="flex flex-col items-center pt-10 pb-2 px-4 overflow-hidden animate-sidebar" style="animation-delay: 0ms;">
 
+        @auth
         {{-- Avatar --}}
         <div id="sidebar-avatar" class="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center mb-3 border-4 border-white/20 transition-all duration-300 flex-shrink-0 shadow-lg overflow-hidden">
             @if(auth()->user()->avatar)
@@ -20,8 +20,15 @@
             {{ auth()->user()->name }}
         </p>
         @if(auth()->user()->role === 'super_admin')
-        <p class="text-[#a7c8ff] text-sm mt-1 uppercase tracking-[0.18em]">Super admin</p>
+        <p id="sidebar-role" class="text-[#a7c8ff] text-sm mt-1 uppercase tracking-[0.18em]">Super admin</p>
         @endif
+        @else
+        <div id="sidebar-avatar" class="w-24 h-24 rounded-full bg-blue-500/20 border-2 border-white/20 flex items-center justify-center mb-3 text-white">
+            <svg class="w-12 h-12 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+        </div>
+        <p class="text-white font-bold text-lg text-center">Pengunjung</p>
+        <span class="text-[#a7c8ff] text-xs font-semibold uppercase tracking-wider bg-white/10 px-2.5 py-0.5 rounded-full mt-1">Mode Publik</span>
+        @endauth
 
         {{-- Divider --}}
         <div id="sidebar-divider" class="w-44 h-0.5 bg-white/40 mt-3 mb-2"></div>
@@ -75,6 +82,7 @@
             <span>Users</span>
         </a>
         @endif
+
     </nav>
 
     {{-- System Info Box --}}

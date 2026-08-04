@@ -115,26 +115,27 @@
                     {{-- Foto --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto Barang</label>
-                        
-                        @if($barang->foto)
-                        <div class="mb-4 flex items-center gap-4 p-4 border border-gray-100 rounded-xl bg-gray-50/50">
-                            <img src="{{ Storage::url($barang->foto) }}" class="w-16 h-16 rounded-lg object-cover border border-gray-200 shadow-sm">
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700">Foto Saat Ini</p>
-                                <p class="text-[11px] text-gray-500 mt-0.5">Unggah foto baru di bawah untuk mengganti.</p>
-                            </div>
-                        </div>
-                        @endif
 
-                        <div class="relative group cursor-pointer h-40">
-                            <input type="file" name="foto" accept="image/*"
+                        <div class="relative group cursor-pointer min-h-[220px]">
+                            <input type="file" name="foto" id="foto-input" accept="image/*" onchange="previewImage(this)"
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            <div class="h-full flex flex-col justify-center border-2 border-dashed border-gray-300 rounded-xl px-4 text-center group-hover:border-[#2548cc] transition-colors bg-gray-50 group-hover:bg-blue-50/50 @error('foto') border-red-400 bg-red-50 @enderror">
-                                <svg class="mx-auto h-8 w-8 text-gray-400 group-hover:text-[#2548cc] mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            
+                            {{-- Placeholder Dropzone (hanya jika belum ada foto & belum ada preview baru) --}}
+                            <div id="dropzone-placeholder" class="h-56 {{ $barang->foto ? 'hidden' : 'flex' }} flex-col justify-center border-2 border-dashed border-gray-300 rounded-xl px-4 text-center group-hover:border-[#2548cc] transition-colors bg-gray-50 group-hover:bg-blue-50/50 @error('foto') border-red-400 bg-red-50 @enderror">
+                                <svg class="mx-auto h-12 w-12 text-gray-400 group-hover:text-[#2548cc] mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <p class="text-sm font-medium text-gray-700">Klik atau drag gambar baru</p>
+                                <p class="text-sm font-medium text-gray-700">Klik atau drag gambar baru di sini</p>
                                 <p class="text-[11px] text-gray-500 mt-1">Kosongkan jika tidak ingin mengganti foto.</p>
+                            </div>
+
+                            {{-- Image Preview Container (Muncul jika ada foto lama atau foto baru terpilih) --}}
+                            <div id="preview-container" class="{{ $barang->foto ? 'flex' : 'hidden' }} relative h-56 border-2 border-solid border-[#2548cc]/30 rounded-xl p-2 bg-blue-50/30 items-center justify-center overflow-hidden">
+                                <img id="image-preview" src="{{ $barang->foto ? Storage::url($barang->foto) : '#' }}" alt="Preview" class="h-full w-full object-contain rounded-lg">
+                                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none flex items-center gap-1.5 shadow-lg">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    <span id="preview-text">{{ $barang->foto ? 'Klik untuk mengganti foto' : 'Klik untuk ganti gambar' }}</span>
+                                </div>
                             </div>
                         </div>
                         @error('foto')<p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>@enderror
@@ -157,4 +158,27 @@
     </div>
     </div>
 </div>
+<script>
+function previewImage(input) {
+    const placeholder = document.getElementById('dropzone-placeholder');
+    const container = document.getElementById('preview-container');
+    const preview = document.getElementById('image-preview');
+    const previewText = document.getElementById('preview-text');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            placeholder.classList.add('hidden');
+            placeholder.classList.remove('flex');
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+            if (previewText) previewText.textContent = 'Foto baru terpilih (klik untuk ganti)';
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 @endsection

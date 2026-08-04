@@ -2,45 +2,14 @@
 <div id="loginSuccessPopup" class="success-popup">
     <div class="success-popup-content">
 
-        {{-- Animasi Lingkaran + Ceklis SVG --}}
-        <div class="success-icon-wrapper">
-            <svg class="success-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#00f5ff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#00d4e6;stop-opacity:1" />
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                        <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
-                </defs>
-
-                {{-- Lingkaran luar --}}
-                <circle class="circle-outer" cx="60" cy="60" r="54"
-                    stroke="url(#circleGrad)" stroke-width="3" fill="none"
-                    filter="url(#glow)"
-                    stroke-dasharray="339" stroke-dashoffset="339" />
-
-                {{-- Lingkaran dalam --}}
-                <circle class="circle-inner" cx="60" cy="60" r="44"
-                    stroke="rgba(0,245,255,0.2)" stroke-width="1" fill="rgba(0,245,255,0.05)" />
-
-                {{-- Ceklis --}}
-                <polyline class="checkmark-path" points="38,60 52,74 82,44"
-                    stroke="url(#circleGrad)" stroke-width="5" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round"
-                    filter="url(#glow)"
-                    stroke-dasharray="60" stroke-dashoffset="60" />
-            </svg>
-
-            {{-- Pulse rings --}}
-            <div class="pulse-ring pulse-ring-1"></div>
-            <div class="pulse-ring pulse-ring-2"></div>
-            <div class="pulse-ring pulse-ring-3"></div>
+        {{-- Animasi SweetAlert2 Checkmark --}}
+        <div class="swal2-icon swal2-success swal2-icon-show" style="display: flex;">
+            <div class="swal2-success-circular-line-left"></div>
+            <span class="swal2-success-line-tip"></span>
+            <span class="swal2-success-line-long"></span>
+            <div class="swal2-success-ring"></div>
+            <div class="swal2-success-fix"></div>
+            <div class="swal2-success-circular-line-right"></div>
         </div>
 
         {{-- Teks --}}
@@ -86,9 +55,9 @@
         text-align: center;
         box-shadow:
             0 30px 80px rgba(0, 0, 0, 0.8),
-            0 0 0 1px rgba(0, 245, 255, 0.15),
+            0 0 35px rgba(0, 245, 255, 0.15),
             inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(0, 245, 255, 0.2);
+        border: 1.5px solid rgba(0, 245, 255, 0.25);
         width: 380px;
         position: relative;
         overflow: hidden;
@@ -102,7 +71,7 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 245, 255, 0.03) 60deg, transparent 120deg);
+        background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 245, 255, 0.04) 60deg, transparent 120deg);
         animation: rotateBg 8s linear infinite;
     }
 
@@ -128,40 +97,110 @@
         }
     }
 
-    /* Icon wrapper */
-    .success-icon-wrapper {
+    /* SweetAlert2 Success Icon Animation - Vibrant Green Checkmark */
+    .swal2-icon.swal2-success {
+        border-color: #22c55e;
+        color: #22c55e;
+        width: 80px;
+        height: 80px;
+        border: 4px solid rgba(34, 197, 94, 0.25);
+        border-radius: 50%;
+        font-family: inherit;
+        margin: 0 auto 24px;
+        padding: 0;
         position: relative;
-        width: 130px;
-        height: 130px;
-        margin: 0 auto 28px;
+        box-sizing: content-box;
+        cursor: default;
+        user-select: none;
     }
 
-    .success-svg {
-        width: 130px;
-        height: 130px;
-        position: relative;
+    .swal2-icon.swal2-success .swal2-success-ring {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 4px solid rgba(34, 197, 94, 0.4);
+        box-sizing: content-box;
         z-index: 2;
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
     }
 
-    /* Lingkaran animasi */
-    .circle-outer {
-        animation: drawCircle 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+    .swal2-icon.swal2-success [class^='swal2-success-line'] {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        height: 5px;
+        background-color: #22c55e;
+        border-radius: 2px;
+        box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
     }
 
-    @keyframes drawCircle {
-        to {
-            stroke-dashoffset: 0;
+    .swal2-icon.swal2-success .swal2-success-line-tip {
+        top: 46px;
+        left: 14px;
+        width: 25px;
+        transform: rotate(45deg);
+        animation: swal2-animate-success-line-tip 0.45s;
+    }
+
+    .swal2-icon.swal2-success .swal2-success-line-long {
+        top: 38px;
+        right: 8px;
+        width: 47px;
+        transform: rotate(-45deg);
+        animation: swal2-animate-success-line-long 0.45s;
+    }
+
+    @keyframes swal2-animate-success-line-tip {
+        0% {
+            top: 19px;
+            left: 1px;
+            width: 0;
+        }
+        54% {
+            top: 19px;
+            left: 1px;
+            width: 0;
+        }
+        70% {
+            top: 37px;
+            left: -8px;
+            width: 50px;
+        }
+        84% {
+            top: 48px;
+            left: 21px;
+            width: 17px;
+        }
+        100% {
+            top: 46px;
+            left: 14px;
+            width: 25px;
         }
     }
 
-    /* Ceklis animasi */
-    .checkmark-path {
-        animation: drawCheck 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
-    }
-
-    @keyframes drawCheck {
-        to {
-            stroke-dashoffset: 0;
+    @keyframes swal2-animate-success-line-long {
+        0% {
+            top: 54px;
+            right: 46px;
+            width: 0;
+        }
+        65% {
+            top: 54px;
+            right: 46px;
+            width: 0;
+        }
+        84% {
+            top: 35px;
+            right: 0;
+            width: 55px;
+        }
+        100% {
+            top: 38px;
+            right: 8px;
+            width: 47px;
         }
     }
 
@@ -172,26 +211,26 @@
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        border: 2px solid rgba(0, 245, 255, 0.4);
-        animation: pulseRing 2s ease-out infinite;
+        border: 2px solid rgba(34, 197, 94, 0.4);
+        animation: pulseRing 1.5s ease-out infinite;
     }
 
     .pulse-ring-1 {
         width: 130px;
         height: 130px;
-        animation-delay: 1s;
+        animation-delay: 0.5s;
     }
 
     .pulse-ring-2 {
         width: 130px;
         height: 130px;
-        animation-delay: 1.4s;
+        animation-delay: 0.8s;
     }
 
     .pulse-ring-3 {
         width: 130px;
         height: 130px;
-        animation-delay: 1.8s;
+        animation-delay: 1.1s;
     }
 
     @keyframes pulseRing {
@@ -206,23 +245,23 @@
         }
     }
 
-    /* Teks */
+    /* Teks - Green Vibrant Theme */
     .success-title {
-        font-size: 26px;
+        font-size: 24px;
         font-weight: 800;
-        color: #00f5ff;
-        letter-spacing: 3px;
+        color: #22c55e;
+        letter-spacing: 2px;
         text-transform: uppercase;
-        text-shadow: 0 0 20px rgba(0, 245, 255, 0.6), 0 0 40px rgba(0, 245, 255, 0.3);
-        margin-bottom: 10px;
-        animation: fadeSlideUp 0.5s ease 1.2s both;
+        text-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3);
+        margin-bottom: 8px;
+        animation: fadeSlideUp 0.3s ease 0.2s both;
     }
 
     .success-greeting {
         color: #94a3b8;
         font-size: 15px;
         margin-bottom: 6px;
-        animation: fadeSlideUp 0.5s ease 1.4s both;
+        animation: fadeSlideUp 0.3s ease 0.3s both;
     }
 
     .success-name {
@@ -231,15 +270,15 @@
     }
 
     .success-role {
-        color: rgba(0, 245, 255, 0.7);
+        color: #22c55e;
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 1px;
         margin-bottom: 24px;
-        animation: fadeSlideUp 0.5s ease 1.5s both;
+        animation: fadeSlideUp 0.3s ease 0.35s both;
     }
 
-    /* Progress bar */
+    /* Progress bar - Green Vibrant Gradient */
     .success-progress-bar {
         width: 100%;
         height: 3px;
@@ -247,16 +286,16 @@
         border-radius: 99px;
         overflow: hidden;
         margin-bottom: 8px;
-        animation: fadeSlideUp 0.5s ease 1.6s both;
+        animation: fadeSlideUp 0.3s ease 0.4s both;
     }
 
     .success-progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #00f5ff, #00d4e6);
+        background: linear-gradient(90deg, #22c55e, #10b981);
         border-radius: 99px;
         width: 0%;
-        animation: fillProgress 2.2s ease 1.6s forwards;
-        box-shadow: 0 0 10px rgba(0, 245, 255, 0.6);
+        animation: fillProgress 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
     }
 
     @keyframes fillProgress {
@@ -269,7 +308,7 @@
         color: rgba(148, 163, 184, 0.6);
         font-size: 11px;
         letter-spacing: 1px;
-        animation: fadeSlideUp 0.5s ease 1.7s both;
+        animation: fadeSlideUp 0.3s ease 0.45s both;
     }
 
     @keyframes fadeSlideUp {
@@ -304,7 +343,7 @@
 
                 // Setelah popup selesai, resume semua animasi
                 setTimeout(() => {
-                    popup.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
+                    popup.style.transition = 'opacity 0.4s ease, visibility 0.4s ease';
                     popup.classList.remove('show');
 
                     setTimeout(() => {
@@ -312,9 +351,10 @@
                             el.style.opacity = '';
                             el.style.animationPlayState = 'running';
                         });
-                    }, 500);
-                }, 3500);
-            }, 300);
+                        sessionStorage.setItem('app_navigated', 'true');
+                    }, 400);
+                }, 1700);
+            }, 150);
         }
     });
 </script>
