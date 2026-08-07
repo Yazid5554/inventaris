@@ -94,6 +94,7 @@
         const sidebarName = document.getElementById('sidebar-name');
         const sidebarRole = document.getElementById('sidebar-role');
         const sidebarDivider = document.getElementById('sidebar-divider');
+        const userSection = document.getElementById('sidebar-user-section');
 
         if (!animate) {
             sidebar.style.transition = 'none';
@@ -102,10 +103,16 @@
         }
 
         if (isCollapsed) {
-            sidebar.classList.replace('w-60', 'w-20');
-            sidebar.classList.replace('w-16', 'w-20');
-            main.classList.replace('ml-60', 'ml-20');
-            main.classList.replace('ml-16', 'ml-20');
+            sidebar.classList.remove('w-60', 'w-16');
+            sidebar.classList.add('w-20');
+
+            main.classList.remove('ml-60', 'ml-16', 'md:ml-60', 'md:ml-16');
+            main.classList.add('md:ml-20');
+
+            if (userSection) {
+                userSection.classList.remove('pt-10', 'px-4');
+                userSection.classList.add('pt-4', 'px-2');
+            }
 
             // Sembunyikan teks nav, nama, role, divider, system info
             document.querySelectorAll('#sidebar nav a span, .system-info-box').forEach(el => {
@@ -123,26 +130,29 @@
 
             // Kecilkan avatar
             if (avatar) {
-                avatar.classList.remove('w-24', 'w-32', 'w-10');
-                avatar.classList.add('w-12');
-                avatar.classList.remove('h-24', 'h-32', 'h-10');
-                avatar.classList.add('h-12');
+                avatar.classList.remove('w-24', 'w-32', 'w-10', 'h-24', 'h-32', 'h-10');
+                avatar.classList.add('w-12', 'h-12');
                 avatar.classList.replace('border-4', 'border-2');
+                avatar.classList.replace('mb-3', 'mb-1');
             }
             if (avatarSvg) {
-                avatarSvg.classList.remove('w-14', 'w-16', 'w-6');
-                avatarSvg.classList.add('w-7');
-                avatarSvg.classList.remove('h-14', 'h-16', 'h-6');
-                avatarSvg.classList.add('h-7');
+                avatarSvg.classList.remove('w-14', 'w-16', 'w-6', 'h-14', 'h-16', 'h-6');
+                avatarSvg.classList.add('w-7', 'h-7');
             }
 
-            icon.classList.add('rotate-180');
+            if (icon) icon.classList.add('rotate-180');
 
         } else {
-            sidebar.classList.replace('w-20', 'w-60');
-            sidebar.classList.replace('w-16', 'w-60');
-            main.classList.replace('ml-20', 'ml-60');
-            main.classList.replace('ml-16', 'ml-60');
+            sidebar.classList.remove('w-20', 'w-16');
+            sidebar.classList.add('w-60');
+
+            main.classList.remove('ml-20', 'ml-16', 'md:ml-20', 'md:ml-16');
+            main.classList.add('md:ml-60');
+
+            if (userSection) {
+                userSection.classList.remove('pt-4', 'px-2');
+                userSection.classList.add('pt-10', 'px-4');
+            }
 
             // Tampilkan kembali
             document.querySelectorAll('#sidebar nav a span, .system-info-box').forEach(el => {
@@ -160,20 +170,17 @@
 
             // Besarkan avatar
             if (avatar) {
-                avatar.classList.remove('w-10', 'w-12');
-                avatar.classList.add('w-32');
-                avatar.classList.remove('h-10', 'h-12');
-                avatar.classList.add('h-32');
+                avatar.classList.remove('w-10', 'w-12', 'h-10', 'h-12');
+                avatar.classList.add('w-32', 'h-32');
                 avatar.classList.replace('border-2', 'border-4');
+                avatar.classList.replace('mb-1', 'mb-3');
             }
             if (avatarSvg) {
-                avatarSvg.classList.remove('w-6', 'w-7');
-                avatarSvg.classList.add('w-16');
-                avatarSvg.classList.remove('h-6', 'h-7');
-                avatarSvg.classList.add('h-16');
+                avatarSvg.classList.remove('w-6', 'w-7', 'h-6', 'h-7');
+                avatarSvg.classList.add('w-16', 'h-16');
             }
 
-            icon.classList.remove('rotate-180');
+            if (icon) icon.classList.remove('rotate-180');
         }
 
         if (!animate) {

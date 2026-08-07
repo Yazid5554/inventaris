@@ -1,7 +1,7 @@
 <aside id="sidebar" class="w-60 min-h-screen bg-[#1a2f6e] hidden md:flex flex-col fixed top-0 left-0 z-30 transition-all duration-300 overflow-hidden">
 
     {{-- Avatar & Nama --}}
-    <div class="flex flex-col items-center pt-10 pb-2 px-4 overflow-hidden animate-sidebar" style="animation-delay: 0ms;">
+    <div id="sidebar-user-section" class="flex flex-col items-center pt-10 pb-2 px-4 overflow-hidden animate-sidebar" style="animation-delay: 0ms;">
 
         @auth
         {{-- Avatar --}}
