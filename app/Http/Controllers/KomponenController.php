@@ -41,13 +41,13 @@ class KomponenController extends Controller
             'catatan'        => 'nullable|string|max:500',
         ]);
 
-        $komponen->update($request->only([
-            'jenis_komponen',
-            'merek',
-            'spesifikasi',
-            'kondisi',
-            'catatan'
-        ]));
+        $komponen->update([
+            'jenis_komponen' => $request->jenis_komponen,
+            'merek'          => $request->merek,
+            'spesifikasi'    => $request->spesifikasi,
+            'kondisi'        => $request->kondisi,
+            'catatan'        => $request->catatan,
+        ]);
 
         return redirect()->route('barang.show', $komponen->barang)
             ->with('success', 'Komponen berhasil diupdate.');

@@ -320,4 +320,63 @@ class BarangController extends Controller
         return redirect()->route('barang.show', $barang)
             ->with('success', 'Foto barang berhasil diunggah.');
     }
+
+    // ============================================================
+    // BULK DELETE
+    // ============================================================
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'integer|exists:barang,id']);
+
+        $kodes   = [];
+        $deleted = 0;
+
+        foreach ($request->ids as $id) {
+            $barang = Barang::find($id);
+            if (!$barang) continue;
+
+            $kodes[] = $barang->kode_barang;
+
+            if ($barang->foto)    Storage::disk('public')->delete($barang->foto);
+            if ($barang->qr_code) Storage::disk('public')->delete($barang->qr_code);
+
+            $barang->delete();
+            $deleted++;
+        }
+
+        // Regenerate nomor inventaris untuk semua kode yang terdampak
+        foreach (array_unique(array_filter($kodes)) as $kode) {
+            $this->regenerateNomorInventarisByKode($kode);
+        }
+
+        return redirect()->route('barang.index')
+            ->with('success', "{$deleted} barang berhasil dihapus.");
+    }
+
+    // ============================================================
+    // CHECK NEXT NUMBER (LIVE PREVIEW)
+    // ============================================================
+    public function checkNextNumber(Request $request)
+    {
+        $kode = strtoupper(trim($request->query('kode', '')));
+        if (empty($kode)) {
+            return response()->json([
+                'count' => 0,
+                'next'  => 1,
+                'formatted' => '001/001'
+            ]);
+        }
+
+        $count = Barang::where('kode_barang', $kode)->count();
+        $next  = $count + 1;
+
+        $urutanStr = str_pad($next, 3, '0', STR_PAD_LEFT);
+        $totalStr  = str_pad($next, 3, '0', STR_PAD_LEFT);
+
+        return response()->json([
+            'count'     => $count,
+            'next'      => $next,
+            'formatted' => "{$urutanStr}/{$totalStr}"
+        ]);
+    }
 }

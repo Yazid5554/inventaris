@@ -81,4 +81,33 @@ class LokasiController extends Controller
         return redirect()->route('lokasi.index')
                          ->with('success', 'Lokasi berhasil dihapus.');
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'integer|exists:lokasi,id']);
+
+        $ids      = $request->ids;
+        $skipped  = 0;
+        $deleted  = 0;
+
+        foreach ($ids as $id) {
+            $lokasi = Lokasi::find($id);
+            if (!$lokasi) continue;
+
+            if ($lokasi->barang()->count() > 0) {
+                $skipped++;
+                continue;
+            }
+
+            $lokasi->delete();
+            $deleted++;
+        }
+
+        $msg = "{$deleted} ruangan berhasil dihapus.";
+        if ($skipped > 0) {
+            $msg .= " {$skipped} ruangan dilewati karena masih memiliki barang.";
+        }
+
+        return redirect()->route('lokasi.index')->with('success', $msg);
+    }
 }

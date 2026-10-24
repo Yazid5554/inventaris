@@ -143,6 +143,9 @@
         <table class="w-full text-sm text-left">
             <thead class="bg-gray-50/80 border-b border-gray-100">
                 <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th class="px-4 py-4 w-10 text-center">
+                        <input type="checkbox" id="selectAllBarang" class="w-4 h-4 rounded border-gray-300 text-[#2548cc] focus:ring-[#2548cc] cursor-pointer">
+                    </th>
                     <th class="px-6 py-4">No</th>
                     <th class="px-6 py-4">Kode</th>
                     <th class="px-6 py-4">Nama Barang</th>
@@ -154,6 +157,9 @@
             <tbody class="divide-y divide-gray-50">
                 @forelse($barang as $i => $b)
                 <tr class="hover:bg-blue-50/50 transition-colors group animate-card" style="animation-delay: {{ 250 + ($i * 50) }}ms;">
+                    <td class="px-4 py-3.5 text-center">
+                        <input type="checkbox" name="ids[]" value="{{ $b->id }}" class="barang-item-checkbox w-4 h-4 rounded border-gray-300 text-[#2548cc] focus:ring-[#2548cc] cursor-pointer">
+                    </td>
                     <td class="px-6 py-3.5 text-gray-500 whitespace-nowrap">
                         {{ ($barang->currentPage() - 1) * $barang->perPage() + $i + 1 }}
                     </td>
@@ -226,7 +232,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                         <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
                         <p class="text-lg font-medium text-gray-900">Belum ada data barang</p>
                         <p class="text-sm mt-1">Mulai tambahkan barang inventaris pertama Anda.</p>
@@ -359,6 +365,26 @@
     </div>
 </div>
 
+{{-- Floating Bulk Action Bar --}}
+<div id="bulkActionBar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-gray-900/90 text-white backdrop-blur-md px-5 py-3 rounded-2xl shadow-2xl border border-gray-700/50 flex items-center gap-4 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
+    <div class="flex items-center gap-2 text-sm font-medium">
+        <span class="inline-flex items-center justify-center bg-[#2548cc] text-white min-w-[24px] h-6 px-1.5 rounded-full text-xs font-bold" id="selectedCount">0</span>
+        <span class="text-xs sm:text-sm text-gray-200">barang dipilih</span>
+    </div>
+    <div class="h-4 w-px bg-gray-700"></div>
+    <form id="bulkDeleteForm" action="{{ route('barang.bulk-delete') }}" method="POST" class="m-0 flex items-center">
+        @csrf
+        <div id="bulkDeleteInputs"></div>
+        <button type="button" id="btnBulkDelete" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-sm shadow-red-900/30">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Hapus Terpilih
+        </button>
+    </form>
+    <button type="button" id="btnCancelSelection" class="text-xs text-gray-400 hover:text-white transition cursor-pointer">
+        Batal
+    </button>
+</div>
+
 <script>
 function updateFileName() {
     const input = document.getElementById('import-file');
@@ -379,9 +405,100 @@ function updateFileName() {
     }
 }
 
-// Auto-open modal jika ada error import
-@if(session('import_error'))
-// Modal tidak perlu auto-open, error sudah ditampilkan di halaman
-@endif
+// Bulk Selection Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAllBarang');
+    const itemCheckboxes = document.querySelectorAll('.barang-item-checkbox');
+    const bar = document.getElementById('bulkActionBar');
+    const countEl = document.getElementById('selectedCount');
+    const btnCancel = document.getElementById('btnCancelSelection');
+    const btnBulkDelete = document.getElementById('btnBulkDelete');
+    const bulkDeleteInputs = document.getElementById('bulkDeleteInputs');
+
+    function updateBulkBar() {
+        const checkedBoxes = document.querySelectorAll('.barang-item-checkbox:checked');
+        const count = checkedBoxes.length;
+        
+        if (countEl) countEl.textContent = count;
+
+        if (count > 0) {
+            bar.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            bar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+            bar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            bar.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+        }
+
+        if (selectAll && itemCheckboxes.length > 0) {
+            if (count === 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            } else if (count === itemCheckboxes.length) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = true;
+            }
+        }
+
+        // Highlight row
+        itemCheckboxes.forEach(cb => {
+            const tr = cb.closest('tr');
+            if (tr) {
+                if (cb.checked) {
+                    tr.classList.add('bg-blue-50/70');
+                } else {
+                    tr.classList.remove('bg-blue-50/70');
+                }
+            }
+        });
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            itemCheckboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            updateBulkBar();
+        });
+    }
+
+    itemCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateBulkBar);
+    });
+
+    if (btnCancel) {
+        btnCancel.addEventListener('click', function() {
+            if (selectAll) selectAll.checked = false;
+            itemCheckboxes.forEach(cb => cb.checked = false);
+            updateBulkBar();
+        });
+    }
+
+    if (btnBulkDelete) {
+        btnBulkDelete.addEventListener('click', function(e) {
+            const checkedBoxes = document.querySelectorAll('.barang-item-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            bulkDeleteInputs.innerHTML = '';
+            checkedBoxes.forEach(cb => {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'ids[]';
+                hidden.value = cb.value;
+                bulkDeleteInputs.appendChild(hidden);
+            });
+
+            if (typeof confirmDelete === 'function') {
+                confirmDelete(e, `Apakah Anda yakin ingin menghapus ${checkedBoxes.length} barang yang dipilih secara permanen?`);
+            } else {
+                if (confirm(`Apakah Anda yakin ingin menghapus ${checkedBoxes.length} barang yang dipilih?`)) {
+                    document.getElementById('bulkDeleteForm').submit();
+                }
+            }
+        });
+    }
+});
 </script>
 @endsection

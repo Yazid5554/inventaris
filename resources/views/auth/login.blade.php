@@ -8,29 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        /* Input Focus Glow */
-        .input-glow:focus-within {
-            box-shadow: 0 0 0 3.5px rgba(37, 72, 204, 0.15);
-        }
-
-        /* Button Loading Spinner */
-        .btn-loading {
-            pointer-events: none;
-            opacity: 0.85;
-        }
-        .btn-loading .btn-text {
-            display: none !important;
-        }
-        .btn-loading .btn-spinner {
-            display: inline-flex !important;
-        }
-    </style>
 </head>
 
 <body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex items-center justify-center p-0 sm:p-4 md:p-6 overflow-x-hidden selection:bg-[#2548cc] selection:text-white">
@@ -122,7 +99,7 @@
                         <input type="password" id="passwordInput" name="password" required autocomplete="current-password"
                             placeholder="••••••••"
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-11 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#2548cc] transition-all">
-                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition">
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer">
                             <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         </button>
                     </div>
@@ -161,27 +138,6 @@
         </div>
 
     </div>
-
-    <script>
-        // Toggle Show/Hide Password
-        function togglePassword() {
-            const passwordInput = document.getElementById('passwordInput');
-            const eyeIcon = document.getElementById('eye-icon');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a9.04 9.04 0 012.122-.363c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21M3 3l18 18" />`;
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
-            }
-        }
-
-        // Form Submit Loading State
-        document.getElementById('login-form').addEventListener('submit', function() {
-            const btn = document.getElementById('submitBtn');
-            btn.classList.add('btn-loading');
-        });
-    </script>
 </body>
 
 </html>

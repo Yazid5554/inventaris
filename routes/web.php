@@ -18,21 +18,23 @@ Route::get('/', fn() => redirect()->route('login'));
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
 
 // Auth — semua role
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/profile/avatar', [\App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 
-    Route::get('/barang/{barang}/print-qr', [BarangController::class, 'printQr'])->name('barang.print-qr');
     Route::get('/barang/print-qr-semua', [BarangController::class, 'printQrSemua'])->name('barang.print-qr-semua');
+    Route::get('/barang/{barang}/print-qr', [BarangController::class, 'printQr'])->name('barang.print-qr')->where('barang', '[0-9]+');
 
     // Barang — super_admin & admin bisa akses
     Route::middleware(['role:super_admin,admin'])->group(function () {
+        Route::get('/barang/check-next-number', [BarangController::class, 'checkNextNumber'])->name('barang.check-next-number');
         Route::resource('barang', BarangController::class)->except(['show']);
-        Route::post('/barang/{barang}/upload-foto', [BarangController::class, 'uploadFoto'])->name('barang.upload-foto');
-        Route::get('/barang/{barang}/qr', [BarangController::class, 'generateQr'])->name('barang.qr');
+        Route::post('/barang/{barang}/upload-foto', [BarangController::class, 'uploadFoto'])->name('barang.upload-foto')->where('barang', '[0-9]+');
+        Route::get('/barang/{barang}/qr', [BarangController::class, 'generateQr'])->name('barang.qr')->where('barang', '[0-9]+');
+        Route::post('/barang/bulk-delete', [BarangController::class, 'bulkDelete'])->name('barang.bulk-delete');
+        Route::post('/ruangan/bulk-delete', [LokasiController::class, 'bulkDelete'])->name('lokasi.bulk-delete');
         Route::resource('ruangan', LokasiController::class)->parameters(['ruangan' => 'lokasi'])->except(['show'])->names([
             'index'   => 'lokasi.index',
             'create'  => 'lokasi.create',
@@ -47,18 +49,21 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:super_admin'])->group(function () {
         Route::resource('users', UserController::class);
         // Riwayat Kondisi
-        Route::post('/barang/{barang}/kondisi', [RiwayatKondisiController::class, 'store'])->name('kondisi.store');
+        Route::post('/barang/{barang}/kondisi', [RiwayatKondisiController::class, 'store'])->name('kondisi.store')->where('barang', '[0-9]+');
         Route::delete('/kondisi/{riwayatKondisi}', [RiwayatKondisiController::class, 'destroy'])->name('kondisi.destroy');
     });
 });
 
+// Detail Barang Public (Dipasang setelah route static /barang/create agar tidak konflik)
+Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show')->where('barang', '[0-9]+');
+
 // Kerusakan
-Route::post('/barang/{barang}/kerusakan', [KerusakanController::class, 'store'])->name('kerusakan.store');
+Route::post('/barang/{barang}/kerusakan', [KerusakanController::class, 'store'])->name('kerusakan.store')->where('barang', '[0-9]+');
 Route::delete('/kerusakan/{kerusakan}', [KerusakanController::class, 'destroy'])->name('kerusakan.destroy');
 
 // Perbaikan
 Route::get('/perbaikan', [PerbaikanController::class, 'index'])->name('perbaikan.index');
-Route::post('/barang/{barang}/perbaikan', [PerbaikanController::class, 'store'])->name('perbaikan.store');
+Route::post('/barang/{barang}/perbaikan', [PerbaikanController::class, 'store'])->name('perbaikan.store')->where('barang', '[0-9]+');
 Route::patch('/perbaikan/{perbaikan}', [PerbaikanController::class, 'update'])->name('perbaikan.update');
 Route::delete('/perbaikan/{perbaikan}', [PerbaikanController::class, 'destroy'])->name('perbaikan.destroy');
 
@@ -75,6 +80,6 @@ Route::get('/scan', function () {
 })->name('scan.index')->middleware('auth');
 
 // Komponen
-Route::post('/barang/{barang}/komponen', [KomponenController::class, 'store'])->name('komponen.store');
+Route::post('/barang/{barang}/komponen', [KomponenController::class, 'store'])->name('komponen.store')->where('barang', '[0-9]+');
 Route::patch('/komponen/{komponen}', [KomponenController::class, 'update'])->name('komponen.update');
 Route::delete('/komponen/{komponen}', [KomponenController::class, 'destroy'])->name('komponen.destroy');

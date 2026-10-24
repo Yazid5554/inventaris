@@ -2,23 +2,6 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<style>
-    @keyframes fadeSlideUp {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .animate-card {
-        animation: fadeSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-</style>
 
 {{-- Header --}}
 <div class="flex items-center gap-3 mb-4 animate-card" style="animation-delay: 0ms;">

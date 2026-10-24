@@ -26,10 +26,10 @@
                 <span class="text-xs text-gray-400">Zoom</span>
                 <input type="range" id="zoom-slider" min="0" max="3" step="0.01" value="0"
                     class="flex-1 accent-blue-600"
-                    oninput="cropperInstance.zoom(parseFloat(this.value) - currentZoom); currentZoom = parseFloat(this.value);">
+                    oninput="if(cropperInstance) cropperInstance.zoom(parseFloat(this.value) - currentZoom); currentZoom = parseFloat(this.value);">
                 <span class="text-xs text-gray-400">Putar</span>
-                <button onclick="cropperInstance.rotate(-90)" class="text-xs border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition">↺</button>
-                <button onclick="cropperInstance.rotate(90)" class="text-xs border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition">↻</button>
+                <button onclick="if(cropperInstance) cropperInstance.rotate(-90)" class="text-xs border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition">↺</button>
+                <button onclick="if(cropperInstance) cropperInstance.rotate(90)" class="text-xs border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition">↻</button>
             </div>
         </div>
 
@@ -79,126 +79,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    let activeDeleteForm = null;
-
-    function confirmDelete(event, message) {
-        if (event) event.preventDefault();
-        const form = event ? (event.target.closest('form') || event.target) : null;
-        if (!form) return false;
-
-        activeDeleteForm = form;
-        if (message) {
-            document.getElementById('deleteModalMessage').textContent = message;
-        }
-        
-        const modal = document.getElementById('deleteConfirmModal');
-        const content = document.getElementById('deleteConfirmModalContent');
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
-
-        return false;
-    }
-
-    function closeDeleteModal() {
-        const modal = document.getElementById('deleteConfirmModal');
-        const content = document.getElementById('deleteConfirmModalContent');
-
-        modal.classList.add('opacity-0');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            activeDeleteForm = null;
-        }, 200);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const confirmBtn = document.getElementById('confirmDeleteBtn');
-        if (confirmBtn) {
-            confirmBtn.addEventListener('click', function() {
-                if (activeDeleteForm) {
-                    activeDeleteForm.submit();
-                }
-                closeDeleteModal();
-            });
-        }
-    });
-
-    function openQrModal(id, nama, kode, noInventaris, ruangan, gedungLantai) {
-        document.getElementById('qrModalNama').textContent = nama;
-        document.getElementById('qrModalKode').textContent = kode || '-';
-        document.getElementById('qrModalNoInv').textContent = noInventaris || '-';
-        document.getElementById('qrModalRuangan').textContent = ruangan || '-';
-        document.getElementById('qrModalGedung').textContent = gedungLantai || '-';
-        
-        // Set QR Image URL
-        const qrImg = document.getElementById('qrModalImg');
-        qrImg.src = '/barang/' + id + '/qr';
-
-        // Set Action URLs
-        document.getElementById('qrModalDetailBtn').href = '/barang/' + id;
-        document.getElementById('qrModalPrintBtn').href = '/barang/' + id + '/print-qr';
-
-        const modal = document.getElementById('qrModal');
-        const content = document.getElementById('qrModalContent');
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
-    }
-
-    function closeQrModal() {
-        const modal = document.getElementById('qrModal');
-        const content = document.getElementById('qrModalContent');
-
-        modal.classList.add('opacity-0');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 200);
-    }
-
-    function openImageModal(src, title) {
-        document.getElementById('imageModalSrc').src = src;
-        document.getElementById('imageModalTitle').textContent = title || 'Preview Foto';
-        
-        const modal = document.getElementById('imageModal');
-        const content = document.getElementById('imageModalContent');
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
-    }
-
-    function closeImageModal() {
-        const modal = document.getElementById('imageModal');
-        const content = document.getElementById('imageModalContent');
-
-        modal.classList.add('opacity-0');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 200);
-    }
-</script>
 
 {{-- Modal Preview QR Code Custom --}}
 <div id="qrModal" class="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-all duration-200" onclick="if(event.target===this) closeQrModal()">

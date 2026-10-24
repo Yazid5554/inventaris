@@ -23,13 +23,21 @@
             <p class="text-sm text-gray-500 mt-1">Kelola semua ruangan dan lokasi inventaris.</p>
         </div>
     </div>
-    <a href="{{ route('lokasi.create') }}"
-       class="bg-[#2548cc] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:bg-blue-800 transition-all flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Tambah Ruangan
-    </a>
+    <div class="flex items-center gap-2.5">
+        @if($lokasis->count() > 0)
+        <label class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 cursor-pointer shadow-sm transition-all select-none">
+            <input type="checkbox" id="selectAllLokasi" class="w-4 h-4 rounded border-gray-300 text-[#2548cc] focus:ring-[#2548cc] cursor-pointer">
+            <span>Pilih Semua</span>
+        </label>
+        @endif
+        <a href="{{ route('lokasi.create') }}"
+           class="bg-[#2548cc] text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-sm hover:bg-blue-800 transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Tambah Ruangan
+        </a>
+    </div>
 </div>
 
 {{-- Stat Cards --}}
@@ -143,14 +151,17 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
 @endif
 
-    <div class="group bg-white rounded-2xl border {{ $c['border'] }} shadow-sm p-5 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg {{ $c['hover_border'] }} transition-all duration-300 flex flex-col gap-3 animate-card" style="animation-delay: {{ 300 + ($i * 250) }}ms;">
+    <div class="lokasi-card group bg-white rounded-2xl border {{ $c['border'] }} shadow-sm p-5 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg {{ $c['hover_border'] }} transition-all duration-300 flex flex-col gap-3 animate-card" style="animation-delay: {{ 300 + ($i * 250) }}ms;">
 
-        {{-- Top Row: Icon + Gedung Badge --}}
+        {{-- Top Row: Checkbox + Icon + Gedung Badge --}}
         <div class="flex items-start justify-between">
-            <div class="{{ $c['icon_text'] }} w-10 h-10 flex items-center justify-start flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+            <div class="flex items-center gap-2.5">
+                <input type="checkbox" name="ids[]" value="{{ $lokasi->id }}" data-barang-count="{{ $lokasi->barang_count }}" class="lokasi-item-checkbox w-4 h-4 rounded border-gray-300 text-[#2548cc] focus:ring-[#2548cc] cursor-pointer z-10 transition">
+                <div class="{{ $c['icon_text'] }} w-10 h-10 flex items-center justify-start flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
             </div>
             @if($lokasi->gedung)
             <span class="{{ $c['badge'] }} text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -238,4 +249,129 @@
 </div>
 @endif
 
+{{-- Floating Bulk Action Bar --}}
+<div id="bulkActionBar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-gray-900/90 text-white backdrop-blur-md px-5 py-3 rounded-2xl shadow-2xl border border-gray-700/50 flex items-center gap-4 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
+    <div class="flex items-center gap-2 text-sm font-medium">
+        <span class="inline-flex items-center justify-center bg-[#2548cc] text-white min-w-[24px] h-6 px-1.5 rounded-full text-xs font-bold" id="selectedCount">0</span>
+        <span class="text-xs sm:text-sm text-gray-200">ruangan dipilih</span>
+    </div>
+    <div class="h-4 w-px bg-gray-700"></div>
+    <form id="bulkDeleteForm" action="{{ route('lokasi.bulk-delete') }}" method="POST" class="m-0 flex items-center">
+        @csrf
+        <div id="bulkDeleteInputs"></div>
+        <button type="button" id="btnBulkDelete" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-sm shadow-red-900/30">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Hapus Terpilih
+        </button>
+    </form>
+    <button type="button" id="btnCancelSelection" class="text-xs text-gray-400 hover:text-white transition cursor-pointer">
+        Batal
+    </button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAllLokasi');
+    const itemCheckboxes = document.querySelectorAll('.lokasi-item-checkbox');
+    const bar = document.getElementById('bulkActionBar');
+    const countEl = document.getElementById('selectedCount');
+    const btnCancel = document.getElementById('btnCancelSelection');
+    const btnBulkDelete = document.getElementById('btnBulkDelete');
+    const bulkDeleteInputs = document.getElementById('bulkDeleteInputs');
+
+    function updateBulkBar() {
+        const checkedBoxes = document.querySelectorAll('.lokasi-item-checkbox:checked');
+        const count = checkedBoxes.length;
+
+        if (countEl) countEl.textContent = count;
+
+        if (count > 0) {
+            bar.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            bar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+            bar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            bar.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+        }
+
+        if (selectAll && itemCheckboxes.length > 0) {
+            if (count === 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            } else if (count === itemCheckboxes.length) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = true;
+            }
+        }
+
+        // Highlight card
+        itemCheckboxes.forEach(cb => {
+            const card = cb.closest('.lokasi-card');
+            if (card) {
+                if (cb.checked) {
+                    card.classList.add('ring-2', 'ring-[#2548cc]', 'bg-blue-50/20');
+                } else {
+                    card.classList.remove('ring-2', 'ring-[#2548cc]', 'bg-blue-50/20');
+                }
+            }
+        });
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            itemCheckboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            updateBulkBar();
+        });
+    }
+
+    itemCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateBulkBar);
+    });
+
+    if (btnCancel) {
+        btnCancel.addEventListener('click', function() {
+            if (selectAll) selectAll.checked = false;
+            itemCheckboxes.forEach(cb => cb.checked = false);
+            updateBulkBar();
+        });
+    }
+
+    if (btnBulkDelete) {
+        btnBulkDelete.addEventListener('click', function(e) {
+            const checkedBoxes = document.querySelectorAll('.lokasi-item-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            let hasItemsCount = 0;
+            bulkDeleteInputs.innerHTML = '';
+            checkedBoxes.forEach(cb => {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'ids[]';
+                hidden.value = cb.value;
+                bulkDeleteInputs.appendChild(hidden);
+
+                const bCount = parseInt(cb.dataset.barangCount || 0, 10);
+                if (bCount > 0) hasItemsCount++;
+            });
+
+            let msg = `Apakah Anda yakin ingin menghapus ${checkedBoxes.length} ruangan terpilih?`;
+            if (hasItemsCount > 0) {
+                msg += ` (Perhatian: ${hasItemsCount} ruangan masih memiliki barang dan akan otomatis dilewati).`;
+            }
+
+            if (typeof confirmDelete === 'function') {
+                confirmDelete(e, msg);
+            } else {
+                if (confirm(msg)) {
+                    document.getElementById('bulkDeleteForm').submit();
+                }
+            }
+        });
+    }
+});
+</script>
 @endsection

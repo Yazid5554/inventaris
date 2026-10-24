@@ -1,0 +1,119 @@
+/* Custom Component Styles */
+
+/* Input Focus Glow */
+.input-glow:focus-within {
+    box-shadow: 0 0 0 3.5px rgba(37, 72, 204, 0.15);
+}
+
+/* Button Loading Spinner */
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.btn-loading .btn-text {
+    display: none !important;
+}
+
+.btn-loading .btn-spinner {
+    display: inline-flex !important;
+}
+
+/* Login Success Popup Overlay */
+.success-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+}
+
+.success-popup.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: all;
+}
+
+.success-popup-content {
+    background: linear-gradient(145deg, #3a3d48, #2f323a);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 245, 255, 0.2);
+    animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.checkmark-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00f5ff, #00d4e6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+    animation: circlePop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.checkmark {
+    width: 40px;
+    height: 40px;
+    border: 3px solid white;
+    border-radius: 50%;
+    position: relative;
+}
+
+.checkmark::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 16px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    left: 12px;
+    top: 5px;
+    animation: checkDraw 0.6s ease-in-out 0.3s forwards;
+    opacity: 0;
+}
+
+.success-text {
+    color: #00f5ff;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+    margin-bottom: 10px;
+}
+
+.success-subtext {
+    color: #a7c8ff;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

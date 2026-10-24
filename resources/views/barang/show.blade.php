@@ -113,12 +113,6 @@
                             <p class="font-medium text-gray-400 italic">-</p>
                         @endif
                     </div>
-                    
-                    <div class="col-span-2 md:col-span-1">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Sumber Dana</p>
-                        <p class="font-medium text-gray-900">{{ $barang->sumber_dana ?? '-' }}</p>
-                    </div>
-                    
                     <div class="col-span-2 md:col-span-1">
                         <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Status Utama</p>
                         @php
@@ -156,10 +150,62 @@
 
             {{-- Komponen / Aset Pendukung --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-card" style="animation-delay: 200ms;">
-                <h2 class="font-extrabold text-gray-900 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-[#2548cc]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                    Komponen & Aset Pendukung
-                </h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-extrabold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-[#2548cc]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        Komponen & Aset Pendukung
+                    </h2>
+                    @auth
+                    <button type="button" onclick="toggleAddKomponenForm()" class="bg-[#2548cc] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold hover:bg-blue-800 transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span>Tambah Komponen</span>
+                    </button>
+                    @endauth
+                </div>
+
+                @auth
+                {{-- Form Tambah Komponen (Hidden Toggle) --}}
+                <div id="form-tambah-komponen" class="hidden mb-5 p-4 bg-blue-50/60 border border-blue-100 rounded-xl">
+                    <h3 class="text-xs font-bold text-[#1a2f6e] uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-[#2548cc]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        Form Tambah Komponen Baru
+                    </h3>
+                    <form method="POST" action="{{ route('komponen.store', $barang) }}">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Jenis Komponen <span class="text-red-500">*</span></label>
+                                <input type="text" name="jenis_komponen" required placeholder="Filter AC, Remote, RAM, SSD, dll" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#2548cc]/20 focus:border-[#2548cc] bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Merek / Model</label>
+                                <input type="text" name="merek" placeholder="Daikin, Samsung, Kingston, dll" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#2548cc]/20 focus:border-[#2548cc] bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Kondisi <span class="text-red-500">*</span></label>
+                                <select name="kondisi" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#2548cc]/20 focus:border-[#2548cc] bg-white cursor-pointer font-medium">
+                                    <option value="baik">✅ Baik / Normal</option>
+                                    <option value="rusak">❌ Rusak / Bermasalah</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Spesifikasi Detail</label>
+                                <input type="text" name="spesifikasi" placeholder="Kapasitas, seri, ukuran, atau spek pendukung..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#2548cc]/20 focus:border-[#2548cc] bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Catatan Tambahan</label>
+                                <input type="text" name="catatan" placeholder="Catatan posisi atau keterangan..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#2548cc]/20 focus:border-[#2548cc] bg-white">
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button type="button" onclick="toggleAddKomponenForm()" class="px-4 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-200/70 transition-colors cursor-pointer">Batal</button>
+                            <button type="submit" class="bg-[#2548cc] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-800 transition-colors shadow-sm cursor-pointer">Simpan Komponen</button>
+                        </div>
+                    </form>
+                </div>
+                @endauth
 
                 <div class="overflow-x-auto rounded-xl border border-gray-100">
                     <table class="w-full text-left text-xs">
@@ -254,8 +300,15 @@
                             @endauth
                             @empty
                             <tr>
-                                <td colspan="{{ auth()->check() ? '4' : '3' }}" class="px-4 py-8 text-center text-gray-400 text-sm italic">
+                                <td colspan="{{ auth()->check() ? '4' : '3' }}" class="px-4 py-8 text-center text-gray-400 text-xs italic">
                                     Belum ada komponen atau aset pendukung.
+                                    @auth
+                                    <br>
+                                    <button type="button" onclick="toggleAddKomponenForm()" class="mt-2.5 inline-flex items-center gap-1.5 text-[#2548cc] font-bold hover:underline not-italic cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                                        <span>Tambah Komponen Sekarang</span>
+                                    </button>
+                                    @endauth
                                 </td>
                             </tr>
                             @endforelse
@@ -458,6 +511,13 @@
 </div>
 
 <script>
+    function toggleAddKomponenForm() {
+        const form = document.getElementById('form-tambah-komponen');
+        if (form) {
+            form.classList.toggle('hidden');
+        }
+    }
+
     function toggleEdit(id) {
         const row = document.getElementById('edit-' + id);
         if(row.classList.contains('hidden')) {

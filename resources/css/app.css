@@ -1,1 +1,4 @@
 @import "tailwindcss";
+@import "./animations.css";
+@import "./components.css";
+@import "./login-success.css";

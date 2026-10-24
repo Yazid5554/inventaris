@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('komponen', function (Blueprint $table) {
             $table->string('merek', 100)->nullable()->after('jenis_komponen');
         });
-    }
+    }  
 
     public function down(): void
     {
