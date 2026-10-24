@@ -25,12 +25,16 @@
 
 <body class="bg-gray-100 h-screen overflow-hidden flex">
 
+    @auth
     @include('layouts.sidebar')
+    @endauth
 
     {{-- Main Content --}}
-    <div id="main-content" class="flex-1 ml-0 md:ml-60 flex flex-col h-screen overflow-y-auto transition-all duration-300 pb-20 md:pb-0">
+    <div id="main-content" class="flex-1 {{ auth()->check() ? 'ml-0 md:ml-60 pb-20 md:pb-0' : 'ml-0 pb-6' }} flex flex-col h-screen overflow-y-auto transition-all duration-300">
 
+        @auth
         @include('layouts.header')
+        @endauth
 
         @include('layouts.flash')
 
@@ -40,7 +44,9 @@
         </main>
     </div>
 
+    @auth
     @include('layouts.bottom-nav')
+    @endauth
 
     {{-- Alpine.js --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -49,7 +55,9 @@
 
     @include('layouts.scripts')
 
+    @if(session('login_success') && auth()->check())
     @include('layouts.login-success')
+    @endif
 
 </body>
 

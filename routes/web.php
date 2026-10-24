@@ -32,7 +32,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/barang/check-next-number', [BarangController::class, 'checkNextNumber'])->name('barang.check-next-number');
         Route::resource('barang', BarangController::class)->except(['show']);
         Route::post('/barang/{barang}/upload-foto', [BarangController::class, 'uploadFoto'])->name('barang.upload-foto')->where('barang', '[0-9]+');
-        Route::get('/barang/{barang}/qr', [BarangController::class, 'generateQr'])->name('barang.qr')->where('barang', '[0-9]+');
         Route::post('/barang/bulk-delete', [BarangController::class, 'bulkDelete'])->name('barang.bulk-delete');
         Route::post('/ruangan/bulk-delete', [LokasiController::class, 'bulkDelete'])->name('lokasi.bulk-delete');
         Route::resource('ruangan', LokasiController::class)->parameters(['ruangan' => 'lokasi'])->except(['show'])->names([
@@ -54,8 +53,9 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-// Detail Barang Public (Dipasang setelah route static /barang/create agar tidak konflik)
+// Detail Barang & QR Code Public (Bisa diakses publik tanpa login)
 Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show')->where('barang', '[0-9]+');
+Route::get('/barang/{barang}/qr', [BarangController::class, 'generateQr'])->name('barang.qr')->where('barang', '[0-9]+');
 
 // Kerusakan
 Route::post('/barang/{barang}/kerusakan', [KerusakanController::class, 'store'])->name('kerusakan.store')->where('barang', '[0-9]+');

@@ -1,3 +1,4 @@
+@auth
 {{-- Login Success Popup --}}
 <div id="loginSuccessPopup" class="success-popup" data-login-success="{{ session()->has('login_success') ? 'true' : 'false' }}">
     <div class="success-popup-content">
@@ -14,8 +15,8 @@
 
         {{-- Teks --}}
         <div class="success-title">LOGIN BERHASIL!</div>
-        <div class="success-greeting">Selamat datang, <span class="success-name">{{ auth()->user()->name ?? '' }}</span></div>
-        <div class="success-role">{{ auth()->user()->role === 'super_admin' ? '⚡ Super Admin' : '👤 Admin' }}</div>
+        <div class="success-greeting">Selamat datang, <span class="success-name">{{ auth()->user()?->name ?? '' }}</span></div>
+        <div class="success-role">{{ (auth()->user()?->role === 'super_admin') ? '⚡ Super Admin' : '👤 Admin' }}</div>
 
         {{-- Progress bar --}}
         <div class="success-progress-bar">
@@ -25,3 +26,4 @@
 
     </div>
 </div>
+@endauth

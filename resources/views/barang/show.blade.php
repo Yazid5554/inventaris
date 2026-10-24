@@ -20,21 +20,20 @@
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6 animate-card" style="animation-delay: 0ms;">
         <div class="flex items-center gap-4">
-            <a href="{{ auth()->check() ? route('barang.index') : route('login') }}" class="p-2 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-[#2548cc] hover:border-[#2548cc] hover:bg-blue-50 transition-all shadow-sm">
+            @auth
+            <a href="{{ route('barang.index') }}" class="p-2 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-[#2548cc] hover:border-[#2548cc] hover:bg-blue-50 transition-all shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
             </a>
+            @endauth
             <div>
                 <h1 class="text-2xl font-extrabold text-[#1a2f6e] flex items-center gap-2">
                     {{ $barang->nama }}
-                    @guest
-                    <span class="bg-blue-50 text-[#2548cc] text-xs font-bold px-2.5 py-1 rounded-full border border-blue-200/60">👁️ Detail Publik</span>
-                    @endguest
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">Detail informasi, kondisi, dan riwayat perbaikan inventaris.</p>
             </div>
         </div>
+        @auth
         <div class="flex items-center gap-2">
-            @auth
             <a href="{{ route('barang.print-qr', $barang) }}"
                 class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
@@ -52,13 +51,8 @@
                     Hapus
                 </button>
             </form>
-            @else
-            <a href="{{ route('login') }}" class="bg-[#2548cc] hover:bg-blue-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                <span>Login Admin</span>
-            </a>
-            @endauth
         </div>
+        @endauth
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -394,9 +388,9 @@
         <div class="space-y-6">
             
             {{-- Update Kondisi & Servis Cepat --}}
+            @auth
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-card" style="animation-delay: 150ms;">
                 <h3 class="font-extrabold text-gray-900 mb-1">Update Kondisi & Servis</h3>
-                @auth
                 <p class="text-[11px] text-gray-500 mb-4 leading-relaxed">Perbarui status barang saat inspeksi rutin atau setelah tindakan servis.</p>
                 <form method="POST" action="{{ route('kondisi.store', $barang) }}" class="space-y-3">
                     @csrf
@@ -424,17 +418,8 @@
                         Simpan Perubahan Status
                     </button>
                 </form>
-                @else
-                <p class="text-xs text-gray-500 mb-3 leading-relaxed">Anda sedang melihat detail inventaris sebagai <b>Pengunjung (Publik)</b>.</p>
-                <div class="p-3.5 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-blue-900 flex items-start gap-2.5">
-                    <svg class="w-5 h-5 text-[#2548cc] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <div>
-                        <p class="font-bold">Info Hak Akses Admin:</p>
-                        <p class="mt-0.5 text-blue-800">Untuk memperbarui status kondisi, mengedit data, atau mencetak QR, silakan <a href="{{ route('login') }}" class="underline font-bold text-[#2548cc]">Login Admin</a>.</p>
-                    </div>
-                </div>
-                @endauth
             </div>
+            @endauth
 
             {{-- Foto Barang --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 animate-card" style="animation-delay: 250ms;">
